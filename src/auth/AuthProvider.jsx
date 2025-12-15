@@ -5,6 +5,8 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 
 import axios from "axios";
@@ -15,6 +17,8 @@ export const AuthContext = createContext(null);
 
 const API = import.meta.env.VITE_API_URL;
 
+const googleProvider = new GoogleAuthProvider();
+
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,6 +28,8 @@ export default function AuthProvider({ children }) {
 
   const loginUser = (email, password) =>
     signInWithEmailAndPassword(auth, email, password);
+
+  const googleLogin = () => signInWithPopup(auth, googleProvider);
 
   const logoutUser = () => signOut(auth);
 
@@ -53,6 +59,7 @@ export default function AuthProvider({ children }) {
     loading,
     createUser,
     loginUser,
+    googleLogin,
     logoutUser,
     updateUserProfile,
   };
