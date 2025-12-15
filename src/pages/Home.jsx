@@ -4,6 +4,8 @@ import Featured from '../components/Featured';
 import ContactUs from '../components/ContactUS';
 import Footer from '../components/Footer';
 import ImpactStats from '../components/ImpactStats';
+import Testimonials from '../components/Testimonials';
+import FAQ from '../components/FAQ';
 
 const Home = () => {
     return (
@@ -11,6 +13,8 @@ const Home = () => {
             <Banner></Banner>
             <Featured></Featured>
             <ImpactStats></ImpactStats>
+            <Testimonials></Testimonials>
+            <FAQ></FAQ>
             <ContactUs></ContactUs>
             <Footer></Footer>
         </div>
