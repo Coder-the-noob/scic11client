@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import SearchDonors from "../pages/SearchDonors";
+import DashBoardLayouts from "../layouts/DashBoardLayouts";
+import DashboardHome from "../dashboard/DashboardHome";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +30,18 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+//   Dashboard path
+  {
+    path: "/dashboard",
+    element: <DashBoardLayouts></DashBoardLayouts>,
+    children: [
+        {
+            index: true,
+            element: <DashboardHome></DashboardHome>
+        }
+    ]
+  }
 ]);
 
 export default router;
