@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import DonorCard from "../components/DonorCard";
 import { districts } from "../utils/districts";
@@ -9,125 +9,146 @@ const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 export default function SearchDonors() {
   const [donors, setDonors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const [bloodGroup, setBloodGroup] = useState("");
   const [district, setDistrict] = useState("");
   const [upazila, setUpazila] = useState("");
 
-  const filteredUpazilas = district
-    ? upazilas[district] || []
-    : [];
+  const filteredUpazilas = district ? upazilas[district] || [] : [];
 
-  useEffect(() => {
-    const fetchDonors = async () => {
-      try {
-        setLoading(true);
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setSearched(true);
+    setShowToast(false);
 
-        const params = {};
-        if (bloodGroup) params.bloodGroup = bloodGroup;
-        if (district) params.district = district;
-        if (upazila) params.upazila = upazila;
+    try {
+      setLoading(true);
 
-        const res = await axios.get(
-          "http://localhost:5000/donors",
-          { params }
-        );
+      const params = {};
+      if (bloodGroup) params.bloodGroup = bloodGroup;
+      if (district) params.district = district;
+      if (upazila) params.upazila = upazila;
 
-        setDonors(res.data);
-      } catch (error) {
-        console.error("Failed to load donors", error);
-      } finally {
-        setLoading(false);
+      const res = await axios.get("http://localhost:5000/donors", {
+        params,
+      });
+
+      setDonors(res.data);
+
+      if (res.data.length === 0) {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
       }
-    };
-
-    fetchDonors();
-  }, [bloodGroup, district, upazila]);
+    } catch (error) {
+      console.error("Failed to load donors", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <section className="py-20 bg-base-200 min-h-screen">
+    <section className="py-20 bg-base-200 min-h-screen relative">
       <div className="max-w-6xl mx-auto px-4">
 
-        {/* title */}
-        <h2
-          className="text-3xl font-bold text-center mb-10"
-          data-aos="fade-up"
-        >
+        {/* Title */}
+        <h2 className="text-3xl font-bold text-center mb-10">
           Search Blood Donors
         </h2>
 
-        {/* filters */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"
-          data-aos="fade-up"
+        {/* Search Form */}
+        <form
+          onSubmit={handleSearch}
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10"
         >
-          {/* blood group */}
+          {/* Blood Group */}
           <select
             className="select select-bordered w-full"
             value={bloodGroup}
             onChange={(e) => setBloodGroup(e.target.value)}
           >
-            <option value="">Select Blood Group</option>
+            <option value="">Blood Group</option>
             {bloodGroups.map(bg => (
-              <option key={bg} value={bg}>
-                {bg}
-              </option>
+              <option key={bg} value={bg}>{bg}</option>
             ))}
           </select>
 
-          {/* district */}
+          {/* District */}
           <select
             className="select select-bordered w-full"
             value={district}
             onChange={(e) => {
               setDistrict(e.target.value);
-              setUpazila(""); 
+              setUpazila("");
             }}
           >
-            <option value="">Select District</option>
+            <option value="">District</option>
             {districts.map(d => (
-              <option key={d} value={d}>
-                {d}
-              </option>
+              <option key={d} value={d}>{d}</option>
             ))}
           </select>
 
-          {/* upazila */}
+          {/* Upazila */}
           <select
             className="select select-bordered w-full"
             value={upazila}
             onChange={(e) => setUpazila(e.target.value)}
             disabled={!district}
           >
-            <option value="">Select Upazila</option>
+            <option value="">Upazila</option>
             {filteredUpazilas.map(u => (
-              <option key={u} value={u}>
-                {u}
-              </option>
+              <option key={u} value={u}>{u}</option>
             ))}
           </select>
-        </div>
 
-        {/* loading */}
+          {/* Search Button */}
+          <button type="submit" className="btn btn-primary w-full">
+            Search
+          </button>
+        </form>
+
+        {/* Loading Spinner */}
         {loading && (
-          <p className="text-center text-gray-500">
-            Loading donors...
-          </p>
+          <div className="flex justify-center items-center py-20">
+            <span className="loading loading-spinner loading-lg  text-error"></span>
+          </div>
         )}
 
-        {/* donor cards */}
-        {!loading && donors.length === 0 && (
-          <p className="text-center text-gray-500">
-            No donors found
-          </p>
+        {/* Empty State */}
+        {!searched && !loading && (
+          <div className="card bg-base-100 shadow-md">
+            <div className="card-body items-center text-center">
+              <h3 className="card-title text-lg">
+                Find Blood Donors
+              </h3>
+              <p className="text-gray-500">
+                Choose blood group, district and upazila,
+                then click <span className="font-semibold">Search</span>.
+              </p>
+            </div>
+          </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {donors.map(donor => (
-            <DonorCard key={donor._id} donor={donor} />
-          ))}
-        </div>
+        {/* Donor Cards */}
+        {searched && !loading && donors.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {donors.map(donor => (
+              <DonorCard key={donor._id} donor={donor} />
+            ))}
+          </div>
+        )}
+
       </div>
+
+      {/* Toast */}
+      {showToast && (
+        <div className="toast toast-top toast-end z-50">
+          <div className="alert alert-warning shadow-lg">
+            <span>No donors found matching your search.</span>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

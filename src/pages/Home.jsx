@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import ImpactStats from '../components/ImpactStats';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
+import Campaigns from '../components/Campaigns';
 
 const Home = () => {
     return (
@@ -13,6 +14,7 @@ const Home = () => {
             <Banner></Banner>
             <Featured></Featured>
             <ImpactStats></ImpactStats>
+            <Campaigns></Campaigns>
             <Testimonials></Testimonials>
             <FAQ></FAQ>
             <ContactUs></ContactUs>
