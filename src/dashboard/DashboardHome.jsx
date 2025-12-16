@@ -11,21 +11,27 @@ const DashboardHome = () => {
   const [recentRequests, setRecentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchRecentRequests = () => {
+    if (!user?.email) return;
+
+    return axiosSecure.get("/donation-requests", {
+      params: {
+        email: user.email,
+        limit: 3,
+      },
+    });
+  };
+
   useEffect(() => {
     if (!user?.email) return;
 
-    axiosSecure
-      .get("/donation-requests", {
-        params: {
-          email: user.email,
-          limit: 3,
-        },
-      })
-      .then((res) => {
-        setRecentRequests(res.data);
-        setLoading(false);
-      });
-  }, [user, axiosSecure]);
+    setLoading(true);
+
+    fetchRecentRequests().then((res) => {
+      setRecentRequests(res.data);
+      setLoading(false);
+    });
+  }, [user?.email]);
 
   return (
     <div>
@@ -38,7 +44,17 @@ const DashboardHome = () => {
 
       {/* Recent Requests */}
       {!loading && recentRequests.length > 0 && (
-        <DonationTable requests={recentRequests} showViewAll={true} />
+        <DonationTable
+          requests={recentRequests}
+          showViewAll={true}
+          refetch={() => {
+            setLoading(true);
+            fetchRecentRequests().then((res) => {
+              setRecentRequests(res.data);
+              setLoading(false);
+            });
+          }}
+        />
       )}
 
       {!loading && recentRequests.length === 0 && (
