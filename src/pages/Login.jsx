@@ -4,6 +4,7 @@ import { AuthContext } from "../auth/AuthProvider";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import LoadingOverLay from "../components/LoadingOverLay";
+import axios from "axios";
 
 export default function Login() {
   const { loginUser, googleLogin } = useContext(AuthContext);
@@ -29,20 +30,35 @@ export default function Login() {
     setLoading(true);
     try {
       await loginUser(email, password);
+      const res = await axios.post("http://localhost:5000/auth/jwt", {
+        email,
+      });
+      localStorage.setItem("access-token", res.data.token);
+
       Swal.fire("Success", "Logged in successfully", "success");
       navigate(from, { replace: true });
-    // eslint-disable-next-line no-unused-vars
-    } catch (err) {
+      
+    } catch{
       setError("Invalid email or password");
     }
+
     setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      await googleLogin();
+      const result = await googleLogin();
+      const user = result.user;
+
+      const res = await axios.post("http://localhost:5000/auth/jwt", {
+        email: user.email,
+      });
+
+      localStorage.setItem("access-token", res.data.token);
+
       Swal.fire("Success", "Logged in with Google", "success");
+
       navigate(from, { replace: true });
     } catch {
       setError("Google login failed");

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState } from "react";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../auth/AuthProvider";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
@@ -8,7 +8,7 @@ import { upazilas } from "../../utils/upazilas";
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const CreateDonationRequest = () => {
- const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
   const [district, setDistrict] = useState("");
 
@@ -31,13 +31,11 @@ const CreateDonationRequest = () => {
       donationDate: form.date.value,
       donationTime: form.time.value,
       message: form.message.value,
+      status: "pending",
     };
 
     try {
-      const res = await axiosSecure.post(
-        "/donation-requests",
-        donationRequest
-      );
+      const res = await axiosSecure.post("/donation-requests", donationRequest);
 
       if (res.data.insertedId) {
         Swal.fire("Success", "Donation request created", "success");
@@ -54,25 +52,30 @@ const CreateDonationRequest = () => {
     }
   };
 
+  if (!user) {
+    return (
+      <div className="text-center py-20">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">
-        Create Donation Request
-      </h2>
+      <h2 className="text-2xl font-bold mb-6">Create Donation Request</h2>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
-
         {/* requester info */}
         <input
           type="text"
-          value={user.displayName}
+          value={user?.displayName || ""}
           readOnly
           className="input input-bordered bg-gray-100"
         />
 
         <input
           type="email"
-          value={user.email}
+          value={user?.email || ""}
           readOnly
           className="input input-bordered bg-gray-100"
         />
@@ -127,11 +130,7 @@ const CreateDonationRequest = () => {
           required
         />
 
-        <select
-          name="bloodGroup"
-          className="select select-bordered"
-          required
-        >
+        <select name="bloodGroup" className="select select-bordered" required>
           <option value="">Select Blood Group</option>
           {bloodGroups.map((bg) => (
             <option key={bg} value={bg}>

@@ -1,19 +1,24 @@
-import React from 'react';
 import axios from "axios";
-import { useContext } from "react";
-import { AuthContext } from "../auth/AuthProvider";
+import { useEffect } from "react";
 
 const axiosSecure = axios.create({
   baseURL: "http://localhost:5000",
 });
 
 const useAxiosSecure = () => {
-   const { token } = useContext(AuthContext);
+  useEffect(() => {
+    const interceptor = axiosSecure.interceptors.request.use((config) => {
+      const token = localStorage.getItem("access-token");
+      if (token) {
+        config.headers.authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
 
-  axiosSecure.interceptors.request.use((config) => {
-    config.headers.authorization = `Bearer ${token}`;
-    return config;
-  });
+    return () => {
+      axiosSecure.interceptors.request.eject(interceptor);
+    };
+  }, []);
 
   return axiosSecure;
 };
