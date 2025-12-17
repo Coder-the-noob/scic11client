@@ -1,5 +1,6 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { AuthContext } from "../../auth/AuthProvider";
@@ -9,6 +10,7 @@ const CheckoutForm = () => {
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [amount, setAmount] = useState(500);
   const [loading, setLoading] = useState(false);
@@ -20,11 +22,14 @@ const CheckoutForm = () => {
     setLoading(true);
 
     try {
+      // create payment intent
       const res = await axiosSecure.post("/create-payment-intent", {
         amount,
       });
 
       const clientSecret = res.data.clientSecret;
+
+      // confirm payment
       const { paymentIntent, error } =
         await stripe.confirmCardPayment(clientSecret, {
           payment_method: {
@@ -38,9 +43,26 @@ const CheckoutForm = () => {
 
       if (error) {
         Swal.fire("Error", error.message, "error");
-      } else if (paymentIntent.status === "succeeded") {
-        Swal.fire("Success 🎉", "Thank you for your funding!", "success");
-        setAmount(500);
+        setLoading(false);
+        return;
+      }
+
+      if (paymentIntent.status === "succeeded") {
+        // save funding to DB
+        await axiosSecure.post("/fundings", {
+          name: user.displayName,
+          email: user.email,
+          amount,
+          transactionId: paymentIntent.id,
+        });
+
+        // redirect to success page
+        navigate("/dashboard/payment-success", {
+          state: {
+            amount,
+            transactionId: paymentIntent.id,
+          },
+        });
       }
     } catch {
       Swal.fire("Error", "Payment failed", "error");
@@ -51,37 +73,18 @@ const CheckoutForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Amount */}
-      <div>
-        <label className="block text-sm font-semibold mb-1">
-          Donation Amount (৳)
-        </label>
-        <input
-          type="number"
-          min="100"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="input input-bordered w-full"
-        />
-      </div>
+      <input
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="input input-bordered w-full"
+      />
 
-      {/* Card */}
-      <div className="p-4 border rounded-md bg-gray-50">
-        <CardElement
-          options={{
-            style: {
-              base: {
-                fontSize: "16px",
-              },
-            },
-          }}
-        />
-      </div>
+      <CardElement className="p-4 border rounded" />
 
-      {/* Button */}
       <button
         disabled={!stripe || loading}
-        className="btn bg-red-600 hover:bg-red-700 text-white w-full"
+        className="btn bg-red-600 text-white w-full"
       >
         {loading ? "Processing..." : `Donate ৳${amount}`}
       </button>

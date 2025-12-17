@@ -17,6 +17,8 @@ import AllUsers from "../dashboard/AllUsers";
 import VolunteerRoute from "./VolunteerRoute";
 import DonationRequests from "../pages/DonationRequests";
 import Funding from "../dashboard/funding/Funding";
+import PaymentSuccess from "../dashboard/funding/PaymentSuccess";
+import FundingHistory from "../dashboard/FundingHistory";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +84,14 @@ const router = createBrowserRouter([
         {
             path: "/dashboard/funding",
             element: <ProtectedRoute><Funding></Funding></ProtectedRoute>
+        },
+        {
+            path: "/dashboard/payment-success",
+            element: <ProtectedRoute><PaymentSuccess></PaymentSuccess></ProtectedRoute>
+        },
+        {
+            path: "funding",
+            element: <FundingHistory></FundingHistory>
         }
     ]
   }
