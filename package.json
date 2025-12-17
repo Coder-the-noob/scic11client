@@ -12,6 +12,8 @@
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
+    "@stripe/react-stripe-js": "^5.4.1",
+    "@stripe/stripe-js": "^8.6.0",
     "@tailwindcss/vite": "^4.1.18",
     "aos": "^2.3.4",
     "axios": "^1.13.2",

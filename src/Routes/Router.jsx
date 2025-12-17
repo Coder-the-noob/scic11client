@@ -16,6 +16,7 @@ import AdminRoute from "./AdminRoute";
 import AllUsers from "../dashboard/AllUsers";
 import VolunteerRoute from "./VolunteerRoute";
 import DonationRequests from "../pages/DonationRequests";
+import Funding from "../dashboard/funding/Funding";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
         {
             path: "all-users",
             element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
+        },
+        {
+            path: "/dashboard/funding",
+            element: <ProtectedRoute><Funding></Funding></ProtectedRoute>
         }
     ]
   }
