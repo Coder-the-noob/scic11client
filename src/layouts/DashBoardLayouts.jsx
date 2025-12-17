@@ -58,9 +58,6 @@ const DashBoardLayouts = () => {
         <p className="text-sm mb-6">
           Welcome, <span className="font-semibold">{user?.displayName}</span>
         </p>
-        <p className="text-xs mt-4 mb-4">
-          <span className="font-bold text-2xl">{dbUser?.role}</span>
-        </p>
 
         <nav className="space-y-2">
           <NavLink
