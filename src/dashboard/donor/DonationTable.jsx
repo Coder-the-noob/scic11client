@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../auth/AuthProvider";
 
 const DonationTable = ({ requests, showViewAll, refetch }) => {
   const axiosSecure = useAxiosSecure();
+  const { dbUser } = useContext(AuthContext);
+    const role = dbUser?.role;
 
   const handleStatusUpdate = async (id, status) => {
     try {
@@ -92,6 +95,7 @@ const DonationTable = ({ requests, showViewAll, refetch }) => {
                 </td>
 
                 <td className="flex flex-wrap gap-2">
+                  {/* View always allowed */}
                   <Link
                     to={`/dashboard/donation/${req._id}`}
                     className="btn btn-xs btn-outline"
@@ -99,38 +103,45 @@ const DonationTable = ({ requests, showViewAll, refetch }) => {
                     View
                   </Link>
 
-                  <Link
-                    to={`/dashboard/edit-donation/${req._id}`}
-                    className="btn btn-xs btn-outline"
-                  >
-                    Edit
-                  </Link>
+                  {/* Volunteer & Admin → status update */}
+                  {(role === "admin" || role === "volunteer") &&
+                    req.status === "inprogress" && (
+                      <>
+                        <button
+                          onClick={() => handleStatusUpdate(req._id, "done")}
+                          className="btn btn-xs bg-green-600 text-white"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleStatusUpdate(req._id, "canceled")
+                          }
+                          className="btn btn-xs bg-red-600 text-white"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
 
-                  {/* ✅ Done / Cancel only when inprogress */}
-                  {req.status === "inprogress" && (
+                  {/* Admin only */}
+                  {role === "admin" && (
                     <>
-                      <button
-                        onClick={() => handleStatusUpdate(req._id, "done")}
-                        className="btn btn-xs bg-green-600 hover:bg-green-700 text-white"
+                      <Link
+                        to={`/dashboard/edit-donation/${req._id}`}
+                        className="btn btn-xs btn-outline"
                       >
-                        Done
-                      </button>
+                        Edit
+                      </Link>
 
                       <button
-                        onClick={() => handleStatusUpdate(req._id, "canceled")}
-                        className="btn btn-xs bg-red-600 hover:bg-red-700 text-white"
+                        onClick={() => handleDelete(req._id)}
+                        className="btn btn-xs bg-red-600 text-white"
                       >
-                        Cancel
+                        Delete
                       </button>
                     </>
                   )}
-
-                  <button
-                    onClick={() => handleDelete(req._id)}
-                    className="btn btn-xs bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Delete
-                  </button>
                 </td>
               </tr>
             ))}

@@ -21,7 +21,9 @@ const googleProvider = new GoogleAuthProvider();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [dbUser, setDbUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  console.log("API URL:", API);
 
   const createUser = (email, password) =>
     createUserWithEmailAndPassword(auth, email, password);
@@ -39,16 +41,32 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
+      setLoading(true);
 
       if (currentUser?.email) {
+
+        // ✅ STEP 2: get jwt
         const res = await axios.post(`${API}/auth/jwt`, {
           email: currentUser.email,
         });
-        localStorage.setItem("access-token", res.data?.token);
+
+        const token = res.data?.token;
+        localStorage.setItem("access-token", token);
+
+        // ✅ STEP 3: get db user (role, status)
+        const dbRes = await axios.get(`${API}/users/me`, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
+
+        setDbUser(dbRes.data);
       } else {
         localStorage.removeItem("access-token");
+        setDbUser(null);
       }
+
+      setLoading(false);
     });
 
     return () => unsub();
@@ -56,6 +74,7 @@ export default function AuthProvider({ children }) {
 
   const authInfo = {
     user,
+    dbUser,
     loading,
     createUser,
     loginUser,
