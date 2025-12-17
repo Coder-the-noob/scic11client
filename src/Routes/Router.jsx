@@ -15,6 +15,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
 import AllUsers from "../dashboard/AllUsers";
 import VolunteerRoute from "./VolunteerRoute";
+import DonationRequests from "../pages/DonationRequests";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
         path: "/search-donors",
         element: <SearchDonors />,
       },
+      {
+        path: "/donation-requests",
+        element: <DonationRequests />,
+      }
     ],
   },
 
