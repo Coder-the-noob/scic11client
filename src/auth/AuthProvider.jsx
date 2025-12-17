@@ -41,32 +41,33 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setLoading(true);
 
-      if (currentUser?.email) {
+      try {
+        if (currentUser?.email) {
+          const res = await axios.post(`${API}/auth/jwt`, {
+            email: currentUser.email,
+          });
 
-        // ✅ STEP 2: get jwt
-        const res = await axios.post(`${API}/auth/jwt`, {
-          email: currentUser.email,
-        });
+          const token = res.data?.token;
+          localStorage.setItem("access-token", token);
 
-        const token = res.data?.token;
-        localStorage.setItem("access-token", token);
+          const dbRes = await axios.get(`${API}/users/me`, {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          });
 
-        // ✅ STEP 3: get db user (role, status)
-        const dbRes = await axios.get(`${API}/users/me`, {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
-
-        setDbUser(dbRes.data);
-      } else {
-        localStorage.removeItem("access-token");
+          setDbUser(dbRes.data);
+        } else {
+          localStorage.removeItem("access-token");
+          setDbUser(null);
+        }
+      } catch (error) {
+        console.error("AUTH PROVIDER ERROR:", error);
         setDbUser(null);
+      } finally {
+        setLoading(false); // 🔥 always stop loading
       }
-
-      setLoading(false);
     });
 
     return () => unsub();

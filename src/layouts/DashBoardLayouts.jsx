@@ -1,12 +1,53 @@
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Navigate, NavLink, Outlet } from "react-router";
 import { FaHome, FaPlus, FaList } from "react-icons/fa";
 import { useContext } from "react";
 import { AuthContext } from "../auth/AuthProvider";
+import Loader from "../components/Loader";
 
 const DashBoardLayouts = () => {
-  const { user, dbUser } = useContext(AuthContext);
-  console.log("DB USER:", dbUser);
+  const { user, dbUser, loading } = useContext(AuthContext);
+  console.log("DASHBOARD LAYOUT FILE LOADED");
+
+  // ⏳ loading
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
+  }
+
+  // 🔐 not logged in
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // ⛔ BLOCKED USER
+  if (dbUser && dbUser.status === "blocked") {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-2">
+          Your account is blocked
+        </h2>
+        <p>Please contact admin for support.</p>
+      </div>
+    );
+  }
+
+  if (!dbUser) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
+  }
+
+  console.log("DASHBOARD GUARD CHECK", {
+    user,
+    dbUser,
+    loading,
+  });
 
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-[260px_1fr]">

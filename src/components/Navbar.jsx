@@ -1,10 +1,13 @@
-import { Link, NavLink } from "react-router";
+import { Link, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../auth/AuthProvider";
 import Swal from "sweetalert2";
 
 export default function Navbar() {
-  const { user, logoutUser } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+  const { user, logoutUser } = auth;
+
+  if(!auth) return null;
 
   const handleLogout = async () => {
     try {

@@ -44,8 +44,8 @@ const CreateDonationRequest = () => {
     } catch (error) {
       if (error.response?.status === 403) {
         Swal.fire(
-          "Blocked",
-          "You are blocked and cannot create a request",
+          "Access Denied",
+          "Your account is blocked. Please contact admin.",
           "error"
         );
       }
