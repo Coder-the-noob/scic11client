@@ -5,15 +5,13 @@ const DonationRequests = () => {
   const axiosSecure = useAxiosSecure();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   useEffect(() => {
-    axiosSecure
-      .get("/donation-requests")
-      .then((res) => {
-        setRequests(res.data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    axiosSecure.get("/donation-requests").then((res) => {
+      setRequests(res.data);
+      setLoading(false);
+    });
   }, []);
 
   if (loading) {
@@ -36,74 +34,102 @@ const DonationRequests = () => {
         </p>
       </div>
 
-      {/* EMPTY STATE */}
-      {requests.length === 0 && (
-        <div className="text-center text-gray-500">
-          No donation requests found.
-        </div>
-      )}
-
       {/* TABLE */}
-      {requests.length > 0 && (
-        <div className="overflow-x-auto bg-base-100 shadow rounded-lg">
-          <table className="table">
-            <thead className="bg-base-200">
-              <tr>
-                <th>Recipient</th>
-                <th>Location</th>
-                <th>Date & Time</th>
-                <th>Blood</th>
-                <th>Status</th>
+      <div className="overflow-x-auto bg-base-100 shadow rounded-lg">
+        <table className="table">
+          <thead className="bg-base-200">
+            <tr>
+              <th>Recipient</th>
+              <th>Location</th>
+              <th>Date</th>
+              <th>Blood</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {requests.map((req) => (
+              <tr key={req._id}>
+                <td>
+                  <p className="font-semibold">{req.recipientName}</p>
+                  <p className="text-xs text-gray-500">{req.hospital}</p>
+                </td>
+
+                <td>
+                  {req.recipientDistrict}, {req.recipientUpazila}
+                </td>
+
+                <td>{req.donationDate}</td>
+
+                <td>
+                  <span className="badge badge-error badge-outline font-bold">
+                    {req.bloodGroup}
+                  </span>
+                </td>
+
+                <td>
+                  <span className="badge badge-warning">{req.status}</span>
+                </td>
+
+                <td>
+                  <button
+                    className="btn btn-xs btn-outline"
+                    onClick={() => setSelectedRequest(req)}
+                  >
+                    View
+                  </button>
+                </td>
               </tr>
-            </thead>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-            <tbody>
-              {requests.map((req) => (
-                <tr key={req._id} className="hover">
-                  <td>
-                    <p className="font-semibold">{req.recipientName}</p>
-                    <p className="text-xs text-gray-500">
-                      Hospital: {req.hospital}
-                    </p>
-                  </td>
+      {/* MODAL */}
+      {selectedRequest && (
+        <dialog id="details_modal" className="modal modal-open">
+          <div className="modal-box max-w-xl">
+            <h3 className="font-bold text-2xl text-error mb-4">
+              Donation Request Details
+            </h3>
 
-                  <td>
-                    {req.recipientDistrict}, {req.recipientUpazila}
-                  </td>
+            <div className="space-y-2 text-sm">
+              <p>
+                <b>Recipient:</b> {selectedRequest.recipientName}
+              </p>
+              <p>
+                <b>Blood Group:</b> {selectedRequest.bloodGroup}
+              </p>
+              <p>
+                <b>Hospital:</b> {selectedRequest.hospital}
+              </p>
+              <p>
+                <b>Location:</b> {selectedRequest.recipientDistrict},{" "}
+                {selectedRequest.recipientUpazila}
+              </p>
+              <p>
+                <b>Date & Time:</b> {selectedRequest.donationDate} at{" "}
+                {selectedRequest.donationTime}
+              </p>
+              <p>
+                <b>Status:</b> {selectedRequest.status}
+              </p>
+              <p className="mt-3">
+                <b>Message:</b> {selectedRequest.message}
+              </p>
+            </div>
 
-                  <td>
-                    <p>{req.donationDate}</p>
-                    <p className="text-sm text-gray-500">
-                      {req.donationTime}
-                    </p>
-                  </td>
-
-                  <td>
-                    <span className="badge badge-error badge-outline font-bold">
-                      {req.bloodGroup}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span
-                      className={`badge ${
-                        req.status === "pending"
-                          ? "badge-warning"
-                          : req.status === "inprogress"
-                          ? "badge-info"
-                          : req.status === "done"
-                          ? "badge-success"
-                          : "badge-error"
-                      }`}
-                    >
-                      {req.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            <div className="modal-action">
+              <button
+                className="btn btn-error"
+                onClick={() => setSelectedRequest(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </dialog>
       )}
     </div>
   );
