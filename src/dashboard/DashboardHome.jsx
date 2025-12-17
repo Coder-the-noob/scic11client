@@ -4,6 +4,7 @@ import useAxiosSecure from "../hooks/useAxiosSecure";
 import DonationTable from "./donor/DonationTable";
 import { FaTint, FaClock, FaCheckCircle, FaDonate } from "react-icons/fa";
 import AdminStats from "./admin/AdminStats";
+import AdminChart from "./admin/AdminChart";
 
 const StatCard = ({ icon, label, value, color }) => (
   <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4 hover:shadow-md transition">
@@ -28,10 +29,12 @@ const DashboardHome = () => {
   useEffect(() => {
     if (dbUser?.role === "admin" || dbUser?.role === "volunteer") {
       axiosSecure.get("/fundings/total").then((res) => {
+        console.log("Total Fund API Response:", res.data);
         setTotalFunds(res.data.total);
+
       });
     }
-  }, [dbUser]);
+  }, [axiosSecure, dbUser?.role]);
 
   const fetchRecentRequests = () => {
     if (!user?.email) return;
@@ -97,6 +100,7 @@ const DashboardHome = () => {
       {dbUser?.role === "admin" && (
         <div className="bg-white rounded-2xl shadow-sm p-6">
           <AdminStats />
+          <AdminChart></AdminChart>
         </div>
       )}
 
