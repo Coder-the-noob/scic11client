@@ -63,6 +63,17 @@ const DashBoardLayouts = () => {
         </p>
 
         <nav className="space-y-2">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 py-2 rounded ${
+                isActive ? "bg-red-600 text-white" : "hover:bg-neutral-focus"
+              }`
+            }
+          >
+            <FaHome /> Website Home
+          </NavLink>
+
           {/* Dashboard Home (everyone) */}
           <NavLink
             to="/dashboard"
