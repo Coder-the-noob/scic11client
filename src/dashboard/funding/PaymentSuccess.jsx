@@ -40,7 +40,7 @@ const PaymentSuccess = () => {
         </div>
 
         <div className="flex gap-3 justify-center">
-          <Link to="/dashboard/funding" className="btn btn-outline">
+          <Link to="/dashboard/funding-history" className="btn btn-outline">
             Funding History
           </Link>
 

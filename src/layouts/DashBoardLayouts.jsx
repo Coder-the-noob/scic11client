@@ -84,6 +84,17 @@ const DashBoardLayouts = () => {
             <FaHome /> Dashboard Home
           </NavLink>
 
+          <NavLink
+            to="/dashboard/funding-history"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 py-2 rounded ${
+                isActive ? "bg-red-600 text-white" : "hover:bg-neutral-focus"
+              }`
+            }
+          >
+            <FaList /> Funding History
+          </NavLink>
+
           {/* Donor only */}
           {dbUser?.role === "donor" && (
             <>

@@ -82,15 +82,15 @@ const router = createBrowserRouter([
             element: <AdminRoute><AllUsers></AllUsers></AdminRoute>
         },
         {
-            path: "/dashboard/funding",
+            path: "funding",
             element: <ProtectedRoute><Funding></Funding></ProtectedRoute>
         },
         {
-            path: "/dashboard/payment-success",
+            path: "payment-success",
             element: <ProtectedRoute><PaymentSuccess></PaymentSuccess></ProtectedRoute>
         },
         {
-            path: "funding",
+            path: "funding-history",
             element: <FundingHistory></FundingHistory>
         }
     ]

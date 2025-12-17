@@ -14,9 +14,10 @@ const FundingHistory = () => {
         : { email: user.email };
 
     axiosSecure.get("/fundings", { params }).then((res) => {
+        console.log("Funding History API Response:", res.data);
       setFundings(res.data);
     });
-  }, [user, dbUser]);
+  }, [user?.email, dbUser?.role, axiosSecure]);
 
   return (
     <div>
