@@ -30,15 +30,17 @@ export default function Login() {
     setLoading(true);
     try {
       await loginUser(email, password);
-      const res = await axios.post("http://localhost:5000/auth/jwt", {
-        email,
-      });
+      const res = await axios.post(
+        "https://backend-11-murex.vercel.app/auth/jwt",
+        {
+          email,
+        }
+      );
       localStorage.setItem("access-token", res.data.token);
 
       Swal.fire("Success", "Logged in successfully", "success");
       navigate(from, { replace: true });
-      
-    } catch{
+    } catch {
       setError("Invalid email or password");
     }
 
@@ -51,9 +53,12 @@ export default function Login() {
       const result = await googleLogin();
       const user = result.user;
 
-      const res = await axios.post("http://localhost:5000/auth/jwt", {
-        email: user.email,
-      });
+      const res = await axios.post(
+        "https://backend-11-murex.vercel.app/auth/jwt",
+        {
+          email: user.email,
+        }
+      );
 
       localStorage.setItem("access-token", res.data.token);
 

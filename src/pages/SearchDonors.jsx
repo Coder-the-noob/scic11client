@@ -31,9 +31,12 @@ export default function SearchDonors() {
       if (district) params.district = district;
       if (upazila) params.upazila = upazila;
 
-      const res = await axios.get("http://localhost:5000/donors", {
-        params,
-      });
+      const res = await axios.get(
+        "https://backend-11-murex.vercel.app/donors",
+        {
+          params,
+        }
+      );
 
       setDonors(res.data);
 
@@ -51,7 +54,6 @@ export default function SearchDonors() {
   return (
     <section className="py-20 bg-base-200 min-h-screen relative">
       <div className="max-w-6xl mx-auto px-4">
-
         {/* Title */}
         <h2 className="text-3xl font-bold text-center mb-10">
           Search Blood Donors
@@ -69,8 +71,10 @@ export default function SearchDonors() {
             onChange={(e) => setBloodGroup(e.target.value)}
           >
             <option value="">Blood Group</option>
-            {bloodGroups.map(bg => (
-              <option key={bg} value={bg}>{bg}</option>
+            {bloodGroups.map((bg) => (
+              <option key={bg} value={bg}>
+                {bg}
+              </option>
             ))}
           </select>
 
@@ -84,8 +88,10 @@ export default function SearchDonors() {
             }}
           >
             <option value="">District</option>
-            {districts.map(d => (
-              <option key={d} value={d}>{d}</option>
+            {districts.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
             ))}
           </select>
 
@@ -97,8 +103,10 @@ export default function SearchDonors() {
             disabled={!district}
           >
             <option value="">Upazila</option>
-            {filteredUpazilas.map(u => (
-              <option key={u} value={u}>{u}</option>
+            {filteredUpazilas.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
             ))}
           </select>
 
@@ -119,12 +127,10 @@ export default function SearchDonors() {
         {!searched && !loading && (
           <div className="card bg-base-100 shadow-md">
             <div className="card-body items-center text-center">
-              <h3 className="card-title text-lg">
-                Find Blood Donors
-              </h3>
+              <h3 className="card-title text-lg">Find Blood Donors</h3>
               <p className="text-gray-500">
-                Choose blood group, district and upazila,
-                then click <span className="font-semibold">Search</span>.
+                Choose blood group, district and upazila, then click{" "}
+                <span className="font-semibold">Search</span>.
               </p>
             </div>
           </div>
@@ -133,12 +139,11 @@ export default function SearchDonors() {
         {/* Donor Cards */}
         {searched && !loading && donors.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {donors.map(donor => (
+            {donors.map((donor) => (
               <DonorCard key={donor._id} donor={donor} />
             ))}
           </div>
         )}
-
       </div>
 
       {/* Toast */}
